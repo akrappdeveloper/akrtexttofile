@@ -3,71 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Word Converter</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
+    <title>Text to Document Converter</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f3f3;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
         }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
         textarea {
-            width: 300px;
-            height: 150px;
-            padding: 10px;
-            border: 1px solid #ccc;
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
         }
+
+        textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
         button {
-            margin: 5px;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
+            padding: 12px 25px;
             border: none;
+            border-radius: 25px;
+            font-size: 16px;
             cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 500;
         }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #downloadWord {
+            background: #667eea;
+            color: white;
+        }
+
+        #downloadTxt {
+            background: #764ba2;
+            color: white;
+        }
+
         button:disabled {
-            background-color: #ccc;
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
     </style>
 </head>
 <body>
-    <h1>Text-to-Word Converter</h1>
-    <input type="file" accept="image/*" id="imageUpload">
-    <br>
-    <img id="preview" style="max-width: 200px; display: none;">
-    <br>
-    <p id="loadingMessage" style="display: none;">Extracting text...</p>
-    <textarea id="textArea"></textarea>
-    <br>
-    <button id="downloadWord" disabled>Download as Word</button>
-    <button id="downloadTxt" disabled>Download as TXT</button>
+    <div class="container">
+        <h1>Text to Document Converter</h1>
+        <textarea id="textArea" placeholder="Type or paste your text here..."></textarea>
+        <div class="button-container">
+            <button id="downloadWord">Download as Word</button>
+            <button id="downloadTxt">Download as TXT</button>
+        </div>
+    </div>
 
     <script>
-        document.getElementById("imageUpload").addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("preview").src = e.target.result;
-                    document.getElementById("preview").style.display = "block";
-                };
-                reader.readAsDataURL(file);
-                
-                document.getElementById("loadingMessage").style.display = "block";
-                Tesseract.recognize(file, "eng")
-                    .then(({ data: { text } }) => {
-                        document.getElementById("textArea").value = text;
-                        document.getElementById("downloadWord").disabled = false;
-                        document.getElementById("downloadTxt").disabled = false;
-                    })
-                    .catch(error => console.error("Error extracting text:", error))
-                    .finally(() => document.getElementById("loadingMessage").style.display = "none");
-            }
-        });
-
         function downloadFile(content, fileName, mimeType) {
             const blob = new Blob([content], { type: mimeType });
             const link = document.createElement("a");
@@ -81,12 +114,19 @@
         document.getElementById("downloadWord").addEventListener("click", function() {
             const text = document.getElementById("textArea").value;
             const wordContent = `\ufeff${text}`; // Ensures compatibility with Word
-            downloadFile(wordContent, "extracted_text.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            downloadFile(wordContent, "document.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         });
 
         document.getElementById("downloadTxt").addEventListener("click", function() {
             const text = document.getElementById("textArea").value;
-            downloadFile(text, "extracted_text.txt", "text/plain");
+            downloadFile(text, "document.txt", "text/plain");
+        });
+
+        // Enable/disable buttons based on textarea content
+        document.getElementById("textArea").addEventListener("input", function() {
+            const text = this.value.trim();
+            document.getElementById("downloadWord").disabled = !text;
+            document.getElementById("downloadTxt").disabled = !text;
         });
     </script>
 </body>
