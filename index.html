@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Document Converter</title>
+    <title>Professional Text Editor & Converter</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f6f5;
             min-height: 100vh;
             margin: 0;
             padding: 40px;
@@ -17,90 +17,181 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             width: 100%;
-            max-width: 600px;
-            backdrop-filter: blur(10px);
+            max-width: 800px;
+            border: 1px solid #e0e0e0;
         }
 
         h1 {
-            color: #333;
+            color: #2c3e50;
             text-align: center;
-            margin-bottom: 25px;
-            font-weight: 600;
+            margin: 0 0 20px 0;
+            font-size: 24px;
+            font-weight: 500;
         }
 
-        textarea {
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button, .toolbar select {
+            padding: 6px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            background: #f9f9f9;
+            color: #333;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .toolbar button:hover, .toolbar select:hover {
+            background: #f0f0f0;
+            border-color: #b0b0b0;
+        }
+
+        .toolbar button.active {
+            background: #3498db;
+            color: #fff;
+            border-color: #3498db;
+        }
+
+        .toolbar select {
+            padding: 5px;
+        }
+
+        #editor {
             width: 100%;
-            height: 250px;
+            min-height: 300px;
             padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            resize: vertical;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #fff;
             box-sizing: border-box;
+            outline: none;
+            color: #333;
         }
 
-        textarea:focus {
-            border-color: #667eea;
-            outline: none;
+        #editor:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 4px rgba(52, 152, 219, 0.2);
         }
 
         .button-container {
             display: flex;
-            gap: 15px;
-            justify-content: center;
+            gap: 10px;
+            justify-content: flex-end;
             margin-top: 20px;
         }
 
-        button {
-            padding: 12px 25px;
+        button.download-btn {
+            padding: 10px 20px;
             border: none;
-            border-radius: 25px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 14px;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: background 0.2s ease;
             font-weight: 500;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
         #downloadWord {
-            background: #667eea;
-            color: white;
+            background: #3498db;
+            color: #fff;
         }
 
         #downloadTxt {
-            background: #764ba2;
-            color: white;
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        button.download-btn:hover {
+            background: #2980b9; /* Darker blue for Word */
+        }
+
+        #downloadTxt:hover {
+            background: #27ae60; /* Darker green for TXT */
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        }
+
+        /* Placeholder styling for contenteditable */
+        #editor:empty:before {
+            content: 'Type or paste your text here...';
+            color: #999;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Text to Document Converter</h1>
-        <textarea id="textArea" placeholder="Type or paste your text here..."></textarea>
+        <h1>Professional Text Editor & Converter</h1>
+        <div class="toolbar">
+            <button onclick="formatText('bold')"><b>B</b></button>
+            <button onclick="formatText('italic')"><i>I</i></button>
+            <button onclick="formatText('underline')"><u>U</u></button>
+            <select onchange="changeFontSize(this.value)">
+                <option value="">Font Size</option>
+                <option value="12px">12px</option>
+                <option value="14px">14px</option>
+                <option value="16px">16px</option>
+                <option value="18px">18px</option>
+            </select>
+            <button onclick="alignText('left')">Left</button>
+            <button onclick="alignText('center')">Center</button>
+            <button onclick="alignText('right')">Right</button>
+        </div>
+        <div id="editor" contenteditable="true"></div>
         <div class="button-container">
-            <button id="downloadWord">Download as Word</button>
-            <button id="downloadTxt">Download as TXT</button>
+            <button id="downloadWord" class="download-btn" disabled>Download as Word</button>
+            <button id="downloadTxt" class="download-btn" disabled>Download as TXT</button>
         </div>
     </div>
 
     <script>
+        const editor = document.getElementById("editor");
+
+        // Text formatting functions
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            updateButtonState(command);
+        }
+
+        function changeFontSize(size) {
+            if (size) {
+                document.execCommand('fontSize', false, '7');
+                const fontElements = editor.getElementsByTagName('font');
+                for (let i = 0; i < fontElements.length; i++) {
+                    if (fontElements[i].size === '7') {
+                        fontElements[i].removeAttribute('size');
+                        fontElements[i].style.fontSize = size;
+                    }
+                }
+            }
+        }
+
+        function alignText(alignment) {
+            document.execCommand('justify' + alignment.charAt(0).toUpperCase() + alignment.slice(1), false, null);
+        }
+
+        function updateButtonState(command) {
+            const button = document.querySelector(`button[onclick="formatText('${command}')"]`);
+            button.classList.toggle('active', document.queryCommandState(command));
+        }
+
+        // Download functionality
         function downloadFile(content, fileName, mimeType) {
             const blob = new Blob([content], { type: mimeType });
             const link = document.createElement("a");
@@ -112,21 +203,26 @@
         }
 
         document.getElementById("downloadWord").addEventListener("click", function() {
-            const text = document.getElementById("textArea").value;
-            const wordContent = `\ufeff${text}`; // Ensures compatibility with Word
+            const htmlContent = editor.innerHTML;
+            const wordContent = `\ufeff<html><body>${htmlContent}</body></html>`;
             downloadFile(wordContent, "document.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         });
 
         document.getElementById("downloadTxt").addEventListener("click", function() {
-            const text = document.getElementById("textArea").value;
-            downloadFile(text, "document.txt", "text/plain");
+            const textContent = editor.innerText;
+            downloadFile(textContent, "document.txt", "text/plain");
         });
 
-        // Enable/disable buttons based on textarea content
-        document.getElementById("textArea").addEventListener("input", function() {
-            const text = this.value.trim();
-            document.getElementById("downloadWord").disabled = !text;
-            document.getElementById("downloadTxt").disabled = !text;
+        // Enable/disable buttons based on editor content
+        editor.addEventListener("input", function() {
+            const content = editor.innerText.trim();
+            document.getElementById("downloadWord").disabled = !content;
+            document.getElementById("downloadTxt").disabled = !content;
+        });
+
+        // Update toolbar button states on selection change
+        editor.addEventListener("mouseup", function() {
+            ['bold', 'italic', 'underline'].forEach(command => updateButtonState(command));
         });
     </script>
 </body>
